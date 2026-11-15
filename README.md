@@ -55,8 +55,8 @@ On Windows, run `gradlew.bat build` instead. The resulting mod JAR will be in `b
 
 ## Roadmap / To-Do
 
+- [X] **Accurate Mystical Agriculture farmland rendering** — display the correct Essence Farmland colors in the Garden Cloche. **Status: Done.**
 - [ ] **Mystical Agradditions compatibility** — add Garden Cloche support for Mystical Agradditions seeds and farmlands. Requested in [Issue #1](https://github.com/brennocoelho/MysticalClochedSeeds/issues/1). **Status: Planned.**
-- [ ] **Accurate Mystical Agriculture farmland rendering** — display the correct Essence Farmland colors in the Garden Cloche. **Status: In progress.**
 - [ ] **Mystical Agradditions farmland visuals** — extend accurate farmland rendering to Mystical Agradditions soils as compatibility is added. **Status: Planned.**
 
 ### Known visual limitation
