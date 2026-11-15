@@ -14,14 +14,9 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.block.Block;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -40,17 +35,12 @@ public class ModRecipeProvider extends RecipeProvider {
     private static final ResourceLocation INFERIUM_CROP_ID =
             ResourceLocation.fromNamespaceAndPath("mysticalagriculture", "inferium");
 
-    private static final ResourceLocation MOIST_FARMLAND_TEXTURE =
-            ResourceLocation.withDefaultNamespace("block/farmland_moist");
-
     public ModRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         super(output, registries);
     }
 
     @Override
     protected void buildRecipes(RecipeOutput recipeOutput) {
-        registerSoilTextures();
-
         Item fertilized = resolveFertilizedEssence();
         Collection<Crop> crops = MysticalAgricultureAPI.getCropRegistry().getCrops();
 
@@ -86,28 +76,6 @@ public class ModRecipeProvider extends RecipeProvider {
         LOGGER.info("[MysticalClochedSeeds] Generated {} Cloche recipes for {} crops.", generated, crops.size());
     }
 
-    /**
-     * Registers the soil texture for the MA farmlands (all pointing to farmland_moist).
-     * The vanilla farmland (dirt) is already registered by IE itself, so it is not included here.
-     */
-    private void registerSoilTextures() {
-        List<ItemStack> farmlandStacks = new ArrayList<>();
-        for (int tier = TierHelper.MIN_ESSENCE_TIER; tier <= TierHelper.MAX_ESSENCE_TIER; tier++) {
-            Block farmland = TierHelper.getFarmlandBlockForTier(tier);
-            if (farmland == null) continue;
-            Item item = farmland.asItem();
-            if (item != null && item != Items.AIR) {
-                farmlandStacks.add(new ItemStack(item));
-            }
-        }
-        if (!farmlandStacks.isEmpty()) {
-            ClocheRecipe.registerSoilTexture(
-                    Ingredient.of(farmlandStacks.toArray(new ItemStack[0])),
-                    MOIST_FARMLAND_TEXTURE
-            );
-        }
-    }
-
     private boolean isValidCrop(Crop crop) {
         if (crop == null) return false;
         if (!crop.isEnabled()) return false;
@@ -126,7 +94,7 @@ public class ModRecipeProvider extends RecipeProvider {
     private Item resolveFertilizedEssence() {
         Item item = BuiltInRegistries.ITEM.get(FERTILIZED_ESSENCE_ID);
         if (item == null || item == Items.AIR) {
-            LOGGER.warn("[MysticalEngineering] Item '{}' not found; Fertilized Essence will be omitted from recipes.",
+            LOGGER.warn("[MysticalClochedSeeds] Item '{}' not found; Fertilized Essence will be omitted from recipes.",
                     FERTILIZED_ESSENCE_ID);
             return null;
         }
