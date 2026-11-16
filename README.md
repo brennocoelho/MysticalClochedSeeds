@@ -58,7 +58,7 @@ On Windows, run `gradlew.bat build` instead. The resulting mod JAR will be in `b
 ### Texture Rendering & Asset Replacement
 
 - [x] **Initial Essence Farmland rendering** — Implement colored farmland textures in the Garden Cloche using temporary PNG assets.
-- [ ] **Original texture replacement** — Replace the five Minecraft-derived farmland textures with independently created artwork.
+- [x] **Original texture replacement** — Replaced all five Minecraft-derived farmland textures with original 16×16 pixel-art assets, tested successfully in the Garden Cloche.
 - [ ] **Repository and release cleanup** — Review and remediate historical commits and distributed artifacts containing Minecraft-derived textures.
 - [ ] **Dynamic farmland tinting** — Reproduce Mystical Agriculture's runtime tinting behavior using Minecraft's existing farmland texture, without redistributing it.
 - [ ] **Temporary asset removal** — Remove the custom farmland PNGs once dynamic rendering is stable.
@@ -70,11 +70,13 @@ On Windows, run `gradlew.bat build` instead. The resulting mod JAR will be in `b
 
 ### Farmland Texture Rendering
 
-As of version **1.0.2**, Mystical Cloched Seeds supports colored Essence Farmland rendering inside the Garden Cloche.
+Mystical Cloched Seeds supports colored Essence Farmland rendering inside the Garden Cloche.
 
-The current implementation uses five pre-colored PNG textures derived from Minecraft's vanilla `farmland_moist` texture. These assets are temporary and are scheduled to be replaced with independently created artwork.
+The current implementation uses five custom 16×16 pixel-art textures, independently created to represent the Inferium, Prudentium, Tertium, Imperium, and Supremium farmland tiers.
 
-The long-term goal is to reproduce Mystical Agriculture's dynamic tinting system, referencing Minecraft's existing farmland texture at runtime without redistributing it.
+These textures replace the previous Minecraft-derived assets and preserve the visual characteristics of Mystical Agriculture's farmland without redistributing Mojang's original texture artwork.
+
+**Future improvement:** The long-term goal is to reproduce Mystical Agriculture's dynamic tinting system by referencing Minecraft's existing farmland texture at runtime. Once implemented, this will eliminate the need for separate pre-colored PNG textures.
 
 **Note:** Farmland rendering is purely visual and does not affect crop growth calculations, harvest rewards, or soil-tier compatibility.
 
@@ -88,13 +90,13 @@ Mystical Cloched Seeds is based on **[Mystical Engineering](https://github.com/D
 
 This project builds on that foundation by expanding farmland compatibility and reworking recipe generation and tier-based behavior. Credit for the original work remains with DragonBlak.
 
-### Minecraft Texture Attribution
+### Minecraft Attribution
 
-The five Essence Farmland textures currently included in version **1.0.2** are recolored derivatives of Minecraft's original `farmland_moist` texture, created by **Mojang Studios**.
+Minecraft and its original assets are the intellectual property of Mojang Studios and Microsoft.
 
-These textures were temporarily adapted to reproduce Mystical Agriculture's farmland colors inside the Garden Cloche. They are scheduled to be replaced with independently created artwork, followed by an implementation of dynamic texture tinting.
+Mystical Cloched Seeds is an independent, unofficial community project and is not affiliated with, endorsed by, or approved by Mojang Studios or Microsoft.
 
-Minecraft and its original assets remain the intellectual property of Mojang Studios. Mystical Cloched Seeds is an independent community project and is not affiliated with, endorsed by, or approved by Mojang Studios or Microsoft.
+The custom Essence Farmland textures included in this project were independently created and do not incorporate Minecraft's original texture artwork.
 
 ## License
 
@@ -102,6 +104,6 @@ The project's source code is distributed under the [MIT License](LICENSE), retai
 
 Copyright © 2025 DragonBlak and © 2026 Brenno Coelho (DonCoelho).
 
-**Third-party assets:** Minecraft-derived textures are not offered under this project's MIT License. Their inclusion does not grant any additional rights to use or redistribute Mojang's intellectual property. Attribution does not constitute permission from the original copyright holder.
+Third-party intellectual property remains subject to the rights and terms of its respective owners.
 
 For additional information, see the [Minecraft EULA](https://www.minecraft.net/en-us/eula) and [Minecraft Usage Guidelines](https://www.minecraft.net/en-us/usage-guidelines).
