@@ -7,7 +7,7 @@
 
 **Bring Mystical Agriculture crops to the Immersive Engineering Garden Cloche.**
 
-Mystical Cloched Seeds is a compatibility mod for **Minecraft 1.21.1 (NeoForge)**. It adds Garden Cloche recipes for Mystical Agriculture seeds and supports vanilla soil and all five tiers of Essence Farmland, with tier-aware growth times and harvest rewards.
+Mystical Cloched Seeds is a compatibility mod for **Minecraft 1.21.1 (NeoForge)**. It adds Garden Cloche recipes for Mystical Agriculture seeds and supports vanilla soil and all five tiers of Essence Farmland, with optional support for Insanium Farmland (Tier 6) from Mystical Agradditions. Growth times and harvest rewards are calculated according to seed and soil tiers.
 
 ## Features
 
@@ -16,21 +16,25 @@ Mystical Cloched Seeds is a compatibility mod for **Minecraft 1.21.1 (NeoForge)*
 - **Bonus seed drops:** Essence Farmland can produce an additional seed, with a higher chance when the farmland matches the crop's tier.
 - **Fertilized Essence drops:** harvests have a chance to produce Fertilized Essence.
 - **Inferium yield bonuses:** higher-tier farmland can increase Inferium Essence output.
+- **Optional Mystical Agradditions compatibility (Alpha):** Insanium Farmland can be used with supported Tier 1–5 seeds, preserving tier-aware growth calculations and harvest rewards.
 
 The compatibility recipes are generated from Mystical Agriculture's crop registry, using the mod's tier-based calculations.
 
 ## Requirements
 
-| Component | Requirement |
-| --- | --- |
-| Minecraft | **1.21.1** |
-| NeoForge | **21.1.235+** |
-| Immersive Engineering | **12.4.2+** |
-| Mystical Agriculture | **8.0.16+** |
-| Cucumber Library | **8.0.12 *(development version)*** |
-| Java | **21** |
+| Component | Requirement                                          |
+| --- |------------------------------------------------------|
+| Minecraft | **1.21.1**                                           |
+| NeoForge | **21.1.235+**                                        |
+| Immersive Engineering | **12.4.2+**                                          |
+| Mystical Agriculture | **8.0.16+**                                          |
+| Cucumber Library | **8.0.12** *(development version)*                   |
+| Mystical Agradditions | **8.0.14** *(optional, for Tier 6 farmland support)* |
+| Java | **21**                                               |
 
 > This is an **addon**, not a standalone mod. Both Immersive Engineering and Mystical Agriculture must be installed.
+
+> **Alpha limitation:** Mystical Agradditions Tier 6 seeds are not currently supported in the Garden Cloche. These crops require their respective Crux blocks. Future updates will introduce specialized Cruxed Farmlands crafted through the Mystical Agriculture Infusion Altar.
 
 > **Compatibility warning:** Mystical Cloched Seeds is incompatible with **Mystical Engineering**. Both mods generate Garden Cloche recipes for Mystical Agriculture crops, which may result in conflicting recipes. Install only one of them.
 
@@ -65,8 +69,10 @@ On Windows, run `gradlew.bat build` instead. The resulting mod JAR will be in `b
 
 ### Planned Mod Compatibility
 
-- [ ] **Mystical Agradditions compatibility** — Add Garden Cloche support for Mystical Agradditions seeds and farmlands. Requested in [Issue #1](https://github.com/brennocoelho/MysticalClochedSeeds/issues/1).
-- [ ] **Mystical Agradditions farmland rendering** — Extend the farmland rendering system to support Mystical Agradditions soil colors.
+- [x] **Mystical Agradditions — Initial Alpha compatibility** — Added optional Insanium Farmland support for Tier 1–5 crops.
+- [x] **Insanium Farmland rendering** — Added an original 16×16 texture for the Garden Cloche.
+- [ ] **Tier 6 crop compatibility** — Implement six specialized Cruxed Insanium Farmlands with Infusion Altar crafting recipes.
+- [ ] **Custom infusion effects** — Introduce unique animations, particles, and sounds for Cruxed Farmland crafting.
 
 ### Farmland Texture Rendering
 

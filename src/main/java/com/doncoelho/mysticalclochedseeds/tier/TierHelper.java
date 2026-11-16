@@ -1,9 +1,12 @@
 package com.doncoelho.mysticalclochedseeds.tier;
 
 import com.blakebr0.mysticalagriculture.api.crop.CropTier;
+
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Single source of truth for tier logic and the MA -> number mapping.
@@ -23,9 +26,15 @@ public final class TierHelper {
     public static final int VANILLA_TIER = 0;
     public static final int MIN_ESSENCE_TIER = 1;
     public static final int MAX_ESSENCE_TIER = 5;
+    public static final int AGRADDITIONS_TIER = 6;
 
-    /** All farmland tiers we generate recipes for (vanilla + 1..5). */
-    public static final int[] FARMLAND_TIERS = {0, 1, 2, 3, 4, 5};
+    private static final ResourceLocation INSANIUM_FARMLAND_ID =
+            ResourceLocation.fromNamespaceAndPath(
+                    "mysticalagradditions", "insanium_farmland"
+            );
+
+    /** All farmland tiers we generate recipes for (vanilla + 1..5 + Agradditions tier). */
+    public static final int[] FARMLAND_TIERS = {0, 1, 2, 3, 4, 5, AGRADDITIONS_TIER};
 
     private TierHelper() {
     }
@@ -50,6 +59,8 @@ public final class TierHelper {
             case 3 -> CropTier.THREE.getFarmland();
             case 4 -> CropTier.FOUR.getFarmland();
             case 5 -> CropTier.FIVE.getFarmland();
+            case AGRADDITIONS_TIER ->
+                    BuiltInRegistries.BLOCK.getOptional(INSANIUM_FARMLAND_ID).orElse(null);
             default -> null;
         };
     }
@@ -80,6 +91,7 @@ public final class TierHelper {
             case 3 -> "tertium";
             case 4 -> "imperium";
             case 5 -> "supremium";
+            case AGRADDITIONS_TIER -> "insanium";
             default -> "tier" + tier;
         };
     }

@@ -28,9 +28,15 @@ public final class ClocheSoilTextures {
 
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    /** Index = essence farmland tier (1..5). Index 0 is unused (vanilla tier is handled by IE). */
+    /** Index = essence farmland tier (1..6). Index 0 is unused (vanilla tier is handled by IE). */
     private static final String[] TIER_TEXTURE_NAMES = {
-            null, "inferium", "prudentium", "tertium", "imperium", "supremium"
+            null,
+            "inferium",
+            "prudentium",
+            "tertium",
+            "imperium",
+            "supremium",
+            "insanium"
     };
 
     private ClocheSoilTextures() {}
@@ -42,7 +48,8 @@ public final class ClocheSoilTextures {
 
     private static void register() {
         int registered = 0;
-        for (int tier = TierHelper.MIN_ESSENCE_TIER; tier <= TierHelper.MAX_ESSENCE_TIER; tier++) {
+        for (int tier : TierHelper.FARMLAND_TIERS) {
+            if (tier == TierHelper.VANILLA_TIER) continue;
             Block farmland = TierHelper.getFarmlandBlockForTier(tier);
             if (farmland == null) continue;
             Item item = farmland.asItem();

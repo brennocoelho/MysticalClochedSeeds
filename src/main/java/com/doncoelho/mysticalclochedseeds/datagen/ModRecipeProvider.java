@@ -16,6 +16,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
+
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
@@ -49,6 +51,13 @@ public class ModRecipeProvider extends RecipeProvider {
             if (!isValidCrop(crop)) continue;
 
             int seedTier = TierHelper.getTierValue(crop.getTier());
+
+            // Alpha: Tier 6 crops require special Cruxed Farmland recipes.
+            // These will be implemented in a future development phase.
+            if (seedTier >= TierHelper.AGRADDITIONS_TIER) {
+                continue;
+            }
+
             boolean inferium = isInferium(crop);
 
             for (int farmlandTier : TierHelper.FARMLAND_TIERS) {
@@ -63,7 +72,17 @@ public class ModRecipeProvider extends RecipeProvider {
                             MysticalClochedSeeds.MODID,
                             "cloche_" + crop.getName() + "_from_" + TierHelper.farmlandTierName(farmlandTier)
                     );
-                    recipeOutput.accept(id, recipe, null);
+                    boolean requiresAgradditions =
+                            "mysticalagradditions".equals(crop.getTier().getModId())
+                                    || farmlandTier == TierHelper.AGRADDITIONS_TIER;
+
+                    if (requiresAgradditions) {
+                        recipeOutput.withConditions(
+                                new ModLoadedCondition("mysticalagradditions")
+                        ).accept(id, recipe, null);
+                    } else {
+                        recipeOutput.accept(id, recipe, null);
+                    }
                     generated++;
                 } catch (Exception e) {
                     // E.g. a crop whose block is not a valid crop block for the render function.
