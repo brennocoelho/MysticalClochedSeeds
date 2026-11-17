@@ -133,6 +133,30 @@ dependencies {
 
     // Cucumber — MA's own dependency; needed at runtime so MA loads in dev
     localRuntime "com.blakebr0.cucumber:Cucumber:${minecraft_version}-${cucumber_version}"
+
+    // Automated unit tests — JUnit 5
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // JSON validation for generated recipe tests
+    testImplementation 'com.google.code.gson:gson:2.11.0'
+}
+
+// Run unit tests using the JUnit Platform
+tasks.named('test', Test) {
+    useJUnitPlatform()
+
+    dependsOn tasks.named('jar')
+
+    systemProperty 'modVersion', project.version.toString()
+
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        exceptionFormat = 'full'
+        displayGranularity = 2
+        showStandardStreams = false
+    }
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
