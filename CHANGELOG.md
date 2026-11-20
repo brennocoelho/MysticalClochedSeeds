@@ -2,7 +2,7 @@
 
 Notable changes to Mystical Cloched Seeds are documented here.
 
-## [1.1.0-beta.1] - Unreleased
+## [1.1.0-beta.1] - 2026-11-20
 
 **Tier 6 crops, Cruxed Farmlands, and fully optional Mystical Agradditions integration.**
 
