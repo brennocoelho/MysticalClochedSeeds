@@ -1,0 +1,31 @@
+{
+  "type": "immersiveengineering:cloche",
+  "input": {
+    "item": "mysticalagriculture:deepslate_seeds"
+  },
+  "render": {
+    "type": "immersiveengineering:crop",
+    "block": "mysticalagriculture:deepslate_crop"
+  },
+  "results": [
+    {
+      "id": "mysticalagriculture:deepslate_essence"
+    },
+    {
+      "chance": 0.1,
+      "output": {
+        "id": "mysticalagriculture:deepslate_seeds"
+      }
+    },
+    {
+      "chance": 0.1,
+      "output": {
+        "id": "mysticalagriculture:fertilized_essence"
+      }
+    }
+  ],
+  "soil": {
+    "item": "mysticalagriculture:imperium_farmland"
+  },
+  "time": 540
+}

@@ -1,0 +1,25 @@
+{
+  "type": "immersiveengineering:cloche",
+  "input": {
+    "item": "mysticalagriculture:pulsating_alloy_seeds"
+  },
+  "render": {
+    "type": "immersiveengineering:crop",
+    "block": "mysticalagriculture:pulsating_alloy_crop"
+  },
+  "results": [
+    {
+      "id": "mysticalagriculture:pulsating_alloy_essence"
+    },
+    {
+      "chance": 0.1,
+      "output": {
+        "id": "mysticalagriculture:fertilized_essence"
+      }
+    }
+  ],
+  "soil": {
+    "item": "minecraft:dirt"
+  },
+  "time": 2000
+}

@@ -1,10 +1,13 @@
 package com.doncoelho.mysticalclochedseeds.datagen;
 
 import blusunrize.immersiveengineering.api.crafting.ClocheRecipe;
+
 import com.blakebr0.mysticalagriculture.api.MysticalAgricultureAPI;
 import com.blakebr0.mysticalagriculture.api.crop.Crop;
+
 import com.doncoelho.mysticalclochedseeds.MysticalClochedSeeds;
 import com.doncoelho.mysticalclochedseeds.tier.TierHelper;
+
 import org.slf4j.Logger;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.HolderLookup;
@@ -15,6 +18,8 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
@@ -29,6 +34,10 @@ import java.util.concurrent.CompletableFuture;
 public class ModRecipeProvider extends RecipeProvider {
 
     private static final Logger LOGGER = LogUtils.getLogger();
+
+
+
+
 
     private static final ResourceLocation FERTILIZED_ESSENCE_ID =
             ResourceLocation.fromNamespaceAndPath("mysticalagriculture", "fertilized_essence");
@@ -49,6 +58,13 @@ public class ModRecipeProvider extends RecipeProvider {
             if (!isValidCrop(crop)) continue;
 
             int seedTier = TierHelper.getTierValue(crop.getTier());
+
+            // Tier 6 crops use predefined, conditional JSON recipes.
+            // They do not depend on optional mod registries during datagen.
+            if (seedTier >= TierHelper.AGRADDITIONS_TIER) {
+                continue;
+            }
+
             boolean inferium = isInferium(crop);
 
             for (int farmlandTier : TierHelper.FARMLAND_TIERS) {
@@ -63,7 +79,17 @@ public class ModRecipeProvider extends RecipeProvider {
                             MysticalClochedSeeds.MODID,
                             "cloche_" + crop.getName() + "_from_" + TierHelper.farmlandTierName(farmlandTier)
                     );
-                    recipeOutput.accept(id, recipe, null);
+                    boolean requiresAgradditions =
+                            "mysticalagradditions".equals(crop.getTier().getModId())
+                                    || farmlandTier == TierHelper.AGRADDITIONS_TIER;
+
+                    if (requiresAgradditions) {
+                        recipeOutput.withConditions(
+                                new ModLoadedCondition("mysticalagradditions")
+                        ).accept(id, recipe, null);
+                    } else {
+                        recipeOutput.accept(id, recipe, null);
+                    }
                     generated++;
                 } catch (Exception e) {
                     // E.g. a crop whose block is not a valid crop block for the render function.

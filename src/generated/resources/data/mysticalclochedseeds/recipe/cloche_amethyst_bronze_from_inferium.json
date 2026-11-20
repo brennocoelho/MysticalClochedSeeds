@@ -1,0 +1,31 @@
+{
+  "type": "immersiveengineering:cloche",
+  "input": {
+    "item": "mysticalagriculture:amethyst_bronze_seeds"
+  },
+  "render": {
+    "type": "immersiveengineering:crop",
+    "block": "mysticalagriculture:amethyst_bronze_crop"
+  },
+  "results": [
+    {
+      "id": "mysticalagriculture:amethyst_bronze_essence"
+    },
+    {
+      "chance": 0.1,
+      "output": {
+        "id": "mysticalagriculture:amethyst_bronze_seeds"
+      }
+    },
+    {
+      "chance": 0.1,
+      "output": {
+        "id": "mysticalagriculture:fertilized_essence"
+      }
+    }
+  ],
+  "soil": {
+    "item": "mysticalagriculture:inferium_farmland"
+  },
+  "time": 1600
+}

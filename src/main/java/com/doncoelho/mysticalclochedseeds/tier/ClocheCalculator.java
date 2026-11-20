@@ -42,14 +42,16 @@ public final class ClocheCalculator {
 
     /** Chance (0.0 - 1.0) of dropping a second seed. */
     public static float calculateSeedDropChance(int seedTier, int farmlandTier) {
-        // Vanilla farmland (tier 0) never drops a second seed.
+        // Mystical Agradditions Tier 6 has secondarySeedDrop = false.
+        if (seedTier == TierHelper.AGRADDITIONS_TIER) {
+            return 0.0f;
+        }
         if (farmlandTier == TierHelper.VANILLA_TIER) {
             return 0.0f;
         }
         if (farmlandTier == seedTier) {
             return ClocheConstants.SEED_CHANCE_SAME_TIER_PERCENT / 100.0f;
         }
-        // Any other Essence Farmland (above or below the seed's tier).
         return ClocheConstants.SEED_CHANCE_OTHER_ESSENCE_PERCENT / 100.0f;
     }
 

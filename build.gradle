@@ -77,11 +77,14 @@ neoForge {
         data {
             data()
 
-            // example of overriding the workingDirectory set in configureEach above, uncomment if you want to use it
-            // gameDirectory = project.file('run-data')
+            // Dedicated directory for data generation.
+            // Prevents loading extra mods installed in run/mods.
+            gameDirectory = project.file('run-data')
 
-            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+            programArguments.addAll '--mod', project.mod_id,
+                    '--all',
+                    '--output', file('src/generated/resources/').getAbsolutePath(),
+                    '--existing', file('src/main/resources/').getAbsolutePath()
         }
 
         // applies to all the run configs above
@@ -127,8 +130,39 @@ dependencies {
     compileOnly  "com.blakebr0.mysticalagriculture:MysticalAgriculture:${minecraft_version}-${mystical_agriculture_version}"
     localRuntime "com.blakebr0.mysticalagriculture:MysticalAgriculture:${minecraft_version}-${mystical_agriculture_version}"
 
+    // Mystical Agradditions — optional compatibility
+    compileOnly "com.blakebr0.mysticalagradditions:MysticalAgradditions:${minecraft_version}-${mystical_agradditions_version}"
+    // Allow testing without Agradditions while keeping its API available at compile time.
+    if (project.findProperty("withoutAgradditions") != "true") {
+        localRuntime "com.blakebr0.mysticalagradditions:MysticalAgradditions:${minecraft_version}-${mystical_agradditions_version}"
+    }
+
     // Cucumber — MA's own dependency; needed at runtime so MA loads in dev
     localRuntime "com.blakebr0.cucumber:Cucumber:${minecraft_version}-${cucumber_version}"
+
+    // Automated unit tests — JUnit 5
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // JSON validation for generated recipe tests
+    testImplementation 'com.google.code.gson:gson:2.11.0'
+}
+
+// Run unit tests using the JUnit Platform
+tasks.named('test', Test) {
+    useJUnitPlatform()
+
+    dependsOn tasks.named('jar')
+
+    systemProperty 'modVersion', project.version.toString()
+
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        exceptionFormat = 'full'
+        displayGranularity = 2
+        showStandardStreams = false
+    }
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

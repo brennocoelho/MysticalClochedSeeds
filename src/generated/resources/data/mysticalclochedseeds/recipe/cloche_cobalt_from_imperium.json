@@ -1,0 +1,31 @@
+{
+  "type": "immersiveengineering:cloche",
+  "input": {
+    "item": "mysticalagriculture:cobalt_seeds"
+  },
+  "render": {
+    "type": "immersiveengineering:crop",
+    "block": "mysticalagriculture:cobalt_crop"
+  },
+  "results": [
+    {
+      "id": "mysticalagriculture:cobalt_essence"
+    },
+    {
+      "chance": 0.2,
+      "output": {
+        "id": "mysticalagriculture:cobalt_seeds"
+      }
+    },
+    {
+      "chance": 0.1,
+      "output": {
+        "id": "mysticalagriculture:fertilized_essence"
+      }
+    }
+  ],
+  "soil": {
+    "item": "mysticalagriculture:imperium_farmland"
+  },
+  "time": 960
+}

@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.doncoelho.mysticalclochedseeds.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "MysticalCropBlockMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
