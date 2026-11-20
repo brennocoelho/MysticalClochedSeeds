@@ -7,7 +7,6 @@ import com.blakebr0.mysticalagriculture.api.crop.Crop;
 
 import com.doncoelho.mysticalclochedseeds.MysticalClochedSeeds;
 import com.doncoelho.mysticalclochedseeds.tier.TierHelper;
-import com.doncoelho.mysticalclochedseeds.crux.CruxedFarmlandType;
 
 import org.slf4j.Logger;
 import com.mojang.logging.LogUtils;
@@ -60,86 +59,11 @@ public class ModRecipeProvider extends RecipeProvider {
 
             int seedTier = TierHelper.getTierValue(crop.getTier());
 
-            // Tier 6 crops require special Cruxed Farmland recipes.
-
+            // Tier 6 crops use predefined, conditional JSON recipes.
+            // They do not depend on optional mod registries during datagen.
             if (seedTier >= TierHelper.AGRADDITIONS_TIER) {
-
-                CruxedFarmlandType type =
-                        CruxedFarmlandType.fromCropName(crop.getName());
-
-                if (seedTier == TierHelper.AGRADDITIONS_TIER
-                        && CruxedFarmlandType.AGRADDITIONS_MOD_ID.equals(
-                        crop.getId().getNamespace())
-                        && type != null) {
-
-                    String cropName = type.cropName();
-
-                    ResourceLocation soilId =
-                            ResourceLocation.fromNamespaceAndPath(
-                                    MysticalClochedSeeds.MODID,
-                                    type.farmlandRegistryName()
-                            );
-
-                    Item soilItem =
-                            BuiltInRegistries.ITEM.getOptional(soilId)
-                                    .orElse(Items.AIR);
-
-                    if (soilItem == Items.AIR) {
-                        LOGGER.warn(
-                                "[MysticalClochedSeeds] Missing Tier 6 Cruxed Farmland: {}",
-                                soilId
-                        );
-                    } else {
-                        try {
-                            ClocheRecipe recipe = ClocheRecipeBuilder.build(
-                                    crop,
-                                    seedTier,
-                                    TierHelper.AGRADDITIONS_TIER,
-                                    soilItem,
-                                    false,
-                                    fertilized
-                            );
-
-                            ResourceLocation recipeId =
-                                    ResourceLocation.fromNamespaceAndPath(
-                                            MysticalClochedSeeds.MODID,
-                                            "cloche_" + cropName
-                                                    + "_from_" + cropName + "_cruxed"
-                                    );
-
-                            String extraMod = type.extraModId();
-
-                            if (extraMod == null) {
-                                recipeOutput.withConditions(
-                                        new ModLoadedCondition(
-                                                CruxedFarmlandType.AGRADDITIONS_MOD_ID
-                                        )
-                                ).accept(recipeId, recipe, null);
-                            } else {
-                                recipeOutput.withConditions(
-                                        new ModLoadedCondition(
-                                                CruxedFarmlandType.AGRADDITIONS_MOD_ID
-                                        ),
-                                        new ModLoadedCondition(extraMod)
-                                ).accept(recipeId, recipe, null);
-                            }
-
-                            generated++;
-
-                        } catch (Exception e) {
-                            LOGGER.warn(
-                                    "[MysticalClochedSeeds] Tier 6 recipe failed for '{}': {}",
-                                    cropName,
-                                    e.getMessage()
-                            );
-                        }
-                    }
-                }
-
                 continue;
             }
-
-
 
             boolean inferium = isInferium(crop);
 

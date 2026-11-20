@@ -26,6 +26,10 @@ class RecipeIntegrityTest {
             "src/generated/resources/data/mysticalclochedseeds/recipe"
     );
 
+    private static final Path STATIC_RECIPE_DIRECTORY = Path.of(
+            "src/main/resources/data/mysticalclochedseeds/recipe"
+    );
+
     private static final Map<String, Integer> INFERIUM_FARMLAND_TIERS = Map.of(
             "vanilla", 0,
             "inferium", 1,
@@ -50,6 +54,22 @@ class RecipeIntegrityTest {
             return JsonParser.parseReader(reader).getAsJsonObject();
         }
     }
+
+    private static JsonObject readStaticRecipe(String filename)
+            throws IOException {
+
+        Path recipePath = STATIC_RECIPE_DIRECTORY.resolve(filename);
+
+        assertTrue(
+                Files.isRegularFile(recipePath),
+                "Static recipe not found: " + filename
+        );
+
+        try (var reader = Files.newBufferedReader(recipePath)) {
+            return JsonParser.parseReader(reader).getAsJsonObject();
+        }
+    }
+
 
     @Test
     void allGeneratedRecipesShouldHaveValidJsonStructure()
@@ -199,7 +219,7 @@ class RecipeIntegrityTest {
         );
 
         long tierSixRecipes;
-        try (Stream<Path> files = Files.list(RECIPE_DIRECTORY)) {
+        try (Stream<Path> files = Files.list(STATIC_RECIPE_DIRECTORY)) {
             tierSixRecipes = files.filter(path -> path.getFileName().toString()
                     .endsWith("_cruxed.json")).count();
         }
@@ -207,8 +227,13 @@ class RecipeIntegrityTest {
 
         for (String crop : crops) {
             String filename = "cloche_" + crop + "_from_" + crop + "_cruxed.json";
-            JsonObject recipe = readRecipe(filename);
+            JsonObject recipe = readStaticRecipe(filename);
             String seedId = "mysticalagriculture:" + crop + "_seeds";
+
+            assertFalse(
+                    Files.exists(RECIPE_DIRECTORY.resolve(filename)),
+                    "Duplicate generated Tier 6 recipe: " + filename
+            );
 
             assertAll(filename,
                     () -> assertEquals("immersiveengineering:cloche", recipe.get("type").getAsString()),
