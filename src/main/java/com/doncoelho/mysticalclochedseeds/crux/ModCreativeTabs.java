@@ -38,14 +38,8 @@ public final class ModCreativeTabs {
 
                     .displayItems((parameters, output) -> {
 
-                        for (CruxedFarmlandType type :
-                                CruxedFarmlandType.values()) {
-
-                            output.accept(
-                                    ModBlocks.CRUXED_FARMLANDS
-                                            .get(type)
-                                            .get()
-                            );
+                        for (var block : ModBlocks.CRUXED_FARMLANDS.values()) {
+                            output.accept(block.get());
                         }
 
                     })

@@ -129,7 +129,10 @@ dependencies {
 
     // Mystical Agradditions — optional compatibility
     compileOnly "com.blakebr0.mysticalagradditions:MysticalAgradditions:${minecraft_version}-${mystical_agradditions_version}"
-    localRuntime "com.blakebr0.mysticalagradditions:MysticalAgradditions:${minecraft_version}-${mystical_agradditions_version}"
+    // Allow testing without Agradditions while keeping its API available at compile time.
+    if (project.findProperty("withoutAgradditions") != "true") {
+        localRuntime "com.blakebr0.mysticalagradditions:MysticalAgradditions:${minecraft_version}-${mystical_agradditions_version}"
+    }
 
     // Cucumber — MA's own dependency; needed at runtime so MA loads in dev
     localRuntime "com.blakebr0.cucumber:Cucumber:${minecraft_version}-${cucumber_version}"

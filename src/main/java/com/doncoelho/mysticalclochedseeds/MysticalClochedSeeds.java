@@ -39,11 +39,14 @@ public class MysticalClochedSeeds
         // Register ourselves for server and other game events we are interested in.
         NeoForge.EVENT_BUS.register(this);
 
-        // Register blocks
+        // Register available Cruxed Farmland blocks and items.
         ModBlocks.register(modEventBus);
 
-        // Register items into creative tab
-        ModCreativeTabs.register(modEventBus);
+        // Register the Creative Tab only when at least one
+        // Cruxed Farmland is available.
+        if (ModBlocks.hasRegisteredFarmlands()) {
+            ModCreativeTabs.register(modEventBus);
+        }
 
         // Register data generators
         modEventBus.register(new DataGenerators());

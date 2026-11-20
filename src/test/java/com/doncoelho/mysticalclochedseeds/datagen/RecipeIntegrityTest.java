@@ -2,6 +2,7 @@
 package com.doncoelho.mysticalclochedseeds.datagen;
 
 import com.doncoelho.mysticalclochedseeds.tier.ClocheCalculator;
+import com.doncoelho.mysticalclochedseeds.crux.CruxedFarmlandType;
 
 import org.junit.jupiter.api.Test;
 
@@ -1119,4 +1120,66 @@ class RecipeIntegrityTest {
             );
         }
     }
+
+    @Test
+    void awakeningRecipesShouldRequireTheirOptionalMods()
+            throws IOException {
+
+        Path recipeDirectory = Path.of(
+                "src/main/resources/data/mysticalclochedseeds/recipe"
+        );
+
+        for (CruxedFarmlandType type : CruxedFarmlandType.values()) {
+
+            Path path = recipeDirectory.resolve(
+                    type.farmlandRegistryName() + ".json"
+            );
+
+            assertTrue(Files.isRegularFile(path),
+                    "Missing Awakening recipe: " + path);
+
+            JsonObject recipe;
+
+            try (var reader = Files.newBufferedReader(path)) {
+                recipe = JsonParser.parseReader(reader).getAsJsonObject();
+            }
+
+            assertEquals(
+                    "mysticalagriculture:awakening",
+                    recipe.get("type").getAsString()
+            );
+
+            assertTrue(recipe.has("neoforge:conditions"),
+                    "Missing conditions: " + path);
+
+            Set<String> requiredMods = new HashSet<>();
+
+            for (var element : recipe.getAsJsonArray("neoforge:conditions")) {
+                JsonObject condition = element.getAsJsonObject();
+
+                assertEquals(
+                        "neoforge:mod_loaded",
+                        condition.get("type").getAsString()
+                );
+
+                requiredMods.add(
+                        condition.get("modid").getAsString()
+                );
+            }
+
+            Set<String> expectedMods = new HashSet<>();
+            expectedMods.add(CruxedFarmlandType.AGRADDITIONS_MOD_ID);
+
+            if (type.extraModId() != null) {
+                expectedMods.add(type.extraModId());
+            }
+
+            assertEquals(
+                    expectedMods,
+                    requiredMods,
+                    "Incorrect dependencies: " + path
+            );
+        }
+    }
+
 }
