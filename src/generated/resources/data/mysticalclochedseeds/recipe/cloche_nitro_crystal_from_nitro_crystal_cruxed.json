@@ -1,0 +1,35 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "mysticalagradditions"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "powah"
+    }
+  ],
+  "type": "immersiveengineering:cloche",
+  "input": {
+    "item": "mysticalagriculture:nitro_crystal_seeds"
+  },
+  "render": {
+    "type": "immersiveengineering:crop",
+    "block": "mysticalagriculture:nitro_crystal_crop"
+  },
+  "results": [
+    {
+      "id": "mysticalagriculture:nitro_crystal_essence"
+    },
+    {
+      "chance": 0.1,
+      "output": {
+        "id": "mysticalagriculture:fertilized_essence"
+      }
+    }
+  ],
+  "soil": {
+    "item": "mysticalclochedseeds:nitro_crystal_cruxed_farmland"
+  },
+  "time": 960
+}

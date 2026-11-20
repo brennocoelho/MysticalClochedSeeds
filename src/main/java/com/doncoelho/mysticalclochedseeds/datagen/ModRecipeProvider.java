@@ -32,6 +32,20 @@ public class ModRecipeProvider extends RecipeProvider {
 
     private static final Logger LOGGER = LogUtils.getLogger();
 
+    // Correspondencia exata das seis crops Tier 6 do Mystical Agradditions.
+    private static final java.util.Set<String> TIER_SIX_CROPS = java.util.Set.of(
+            "nether_star", "dragon_egg", "gaia_spirit",
+            "awakened_draconium", "neutronium", "nitro_crystal"
+    );
+
+    // As quatro crops adicionais dependem tambem dos respectivos mods.
+    private static final java.util.Map<String, String> TIER_SIX_EXTRA_MODS = java.util.Map.of(
+            "gaia_spirit", "botania",
+            "awakened_draconium", "draconicevolution",
+            "neutronium", "avaritia",
+            "nitro_crystal", "powah"
+    );
+
     private static final ResourceLocation FERTILIZED_ESSENCE_ID =
             ResourceLocation.fromNamespaceAndPath("mysticalagriculture", "fertilized_essence");
     private static final ResourceLocation INFERIUM_CROP_ID =
@@ -52,11 +66,53 @@ public class ModRecipeProvider extends RecipeProvider {
 
             int seedTier = TierHelper.getTierValue(crop.getTier());
 
-            // Alpha: Tier 6 crops require special Cruxed Farmland recipes.
-            // These will be implemented in a future development phase.
+            // Tier 6 crops require special Cruxed Farmland recipes.
+
             if (seedTier >= TierHelper.AGRADDITIONS_TIER) {
+                if (seedTier == TierHelper.AGRADDITIONS_TIER
+                        && "mysticalagradditions".equals(crop.getId().getNamespace())
+                        && TIER_SIX_CROPS.contains(crop.getName())) {
+
+                    String cropName = crop.getName();
+                    ResourceLocation soilId = ResourceLocation.fromNamespaceAndPath(
+                            MysticalClochedSeeds.MODID, cropName + "_cruxed_farmland"
+                    );
+                    Item soilItem = BuiltInRegistries.ITEM.getOptional(soilId).orElse(Items.AIR);
+
+                    if (soilItem == Items.AIR) {
+                        LOGGER.warn("[MysticalClochedSeeds] Missing Tier 6 Cruxed Farmland: {}", soilId);
+                    } else {
+                        try {
+                            ClocheRecipe recipe = ClocheRecipeBuilder.build(
+                                    crop, seedTier, TierHelper.AGRADDITIONS_TIER,
+                                    soilItem, false, fertilized
+                            );
+                            ResourceLocation recipeId = ResourceLocation.fromNamespaceAndPath(
+                                    MysticalClochedSeeds.MODID,
+                                    "cloche_" + cropName + "_from_" + cropName + "_cruxed"
+                            );
+                            String extraMod = TIER_SIX_EXTRA_MODS.get(cropName);
+
+                            if (extraMod == null) {
+                                recipeOutput.withConditions(
+                                        new ModLoadedCondition("mysticalagradditions")
+                                ).accept(recipeId, recipe, null);
+                            } else {
+                                recipeOutput.withConditions(
+                                        new ModLoadedCondition("mysticalagradditions"),
+                                        new ModLoadedCondition(extraMod)
+                                ).accept(recipeId, recipe, null);
+                            }
+                            generated++;
+                        } catch (Exception e) {
+                            LOGGER.warn("[MysticalClochedSeeds] Tier 6 recipe failed for '{}': {}",
+                                    cropName, e.getMessage());
+                        }
+                    }
+                }
                 continue;
             }
+
 
             boolean inferium = isInferium(crop);
 

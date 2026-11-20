@@ -1,0 +1,31 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "mysticalagradditions"
+    }
+  ],
+  "type": "immersiveengineering:cloche",
+  "input": {
+    "item": "mysticalagriculture:nether_star_seeds"
+  },
+  "render": {
+    "type": "immersiveengineering:crop",
+    "block": "mysticalagriculture:nether_star_crop"
+  },
+  "results": [
+    {
+      "id": "mysticalagriculture:nether_star_essence"
+    },
+    {
+      "chance": 0.1,
+      "output": {
+        "id": "mysticalagriculture:fertilized_essence"
+      }
+    }
+  ],
+  "soil": {
+    "item": "mysticalclochedseeds:nether_star_cruxed_farmland"
+  },
+  "time": 960
+}

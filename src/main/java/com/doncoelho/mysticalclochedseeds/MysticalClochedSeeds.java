@@ -1,9 +1,15 @@
 package com.doncoelho.mysticalclochedseeds;
 
 import com.doncoelho.mysticalclochedseeds.datagen.DataGenerators;
+import com.doncoelho.mysticalclochedseeds.crux.ModBlocks;
+import com.doncoelho.mysticalclochedseeds.crux.ModCreativeTabs;
+
 import org.slf4j.Logger;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -24,6 +30,7 @@ public class MysticalClochedSeeds
     // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
 
+
     public MysticalClochedSeeds(IEventBus modEventBus, ModContainer modContainer)
     {
         // Register the commonSetup method for modloading
@@ -31,6 +38,12 @@ public class MysticalClochedSeeds
 
         // Register ourselves for server and other game events we are interested in.
         NeoForge.EVENT_BUS.register(this);
+
+        // Register blocks
+        ModBlocks.register(modEventBus);
+
+        // Register items into creative tab
+        ModCreativeTabs.register(modEventBus);
 
         // Register data generators
         modEventBus.register(new DataGenerators());

@@ -8,14 +8,11 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.Map;
-import java.util.HashMap;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -186,112 +183,119 @@ class RecipeIntegrityTest {
     }
 
 
+
     @Test
-    void tierSixCropsShouldNotHaveClocheRecipesYet()
-            throws IOException {
-
-        assertTrue(
-                Files.isDirectory(RECIPE_DIRECTORY),
-                "Generated recipe directory was not found."
+    void tierSixCropsShouldOnlyUseTheirMatchingCruxedFarmland() throws IOException {
+        List<String> crops = List.of(
+                "nether_star", "dragon_egg", "gaia_spirit",
+                "awakened_draconium", "neutronium", "nitro_crystal"
+        );
+        Map<String, String> extraMods = Map.of(
+                "gaia_spirit", "botania",
+                "awakened_draconium", "draconicevolution",
+                "neutronium", "avaritia",
+                "nitro_crystal", "powah"
         );
 
-        List<String> tierSixCrops = List.of(
-                "nether_star",
-                "dragon_egg",
-                "gaia_spirit",
-                "awakened_draconium",
-                "neutronium",
-                "nitro_crystal"
-        );
-
-        List<String> recipeNames;
-
+        long tierSixRecipes;
         try (Stream<Path> files = Files.list(RECIPE_DIRECTORY)) {
-            recipeNames = files
-                    .map(path -> path.getFileName().toString())
-                    .filter(name -> name.endsWith(".json"))
-                    .toList();
+            tierSixRecipes = files.filter(path -> path.getFileName().toString()
+                    .endsWith("_cruxed.json")).count();
         }
+        assertEquals(6, tierSixRecipes, "Expected exactly six Tier 6 Cloche recipes");
 
-        for (String crop : tierSixCrops) {
-            String prefix = "cloche_" + crop + "_from_";
+        for (String crop : crops) {
+            String filename = "cloche_" + crop + "_from_" + crop + "_cruxed.json";
+            JsonObject recipe = readRecipe(filename);
+            String seedId = "mysticalagriculture:" + crop + "_seeds";
 
-            assertFalse(
-                    recipeNames.stream()
-                            .anyMatch(name -> name.startsWith(prefix)),
-                    "Unexpected Tier 6 recipe generated for: " + crop
+            assertAll(filename,
+                    () -> assertEquals("immersiveengineering:cloche", recipe.get("type").getAsString()),
+                    () -> assertEquals(seedId,
+                            recipe.getAsJsonObject("input").get("item").getAsString()),
+                    () -> assertEquals("mysticalclochedseeds:" + crop + "_cruxed_farmland",
+                            recipe.getAsJsonObject("soil").get("item").getAsString()),
+                    () -> assertEquals("mysticalagriculture:" + crop + "_crop",
+                            recipe.getAsJsonObject("render").get("block").getAsString()),
+                    () -> assertEquals("mysticalagriculture:" + crop + "_essence",
+                            recipe.getAsJsonArray("results").get(0)
+                                    .getAsJsonObject().get("id").getAsString()),
+                    () -> assertEquals(ClocheCalculator.calculateTime(6, 6),
+                            recipe.get("time").getAsInt()),
+                    () -> assertTrue(recipe.has("neoforge:conditions"),
+                            "Missing optional mod conditions")
             );
+
+            String conditions = recipe.getAsJsonArray("neoforge:conditions").toString();
+            assertTrue(conditions.contains("mysticalagradditions"),
+                    "Missing Agradditions condition: " + filename);
+            String extraMod = extraMods.get(crop);
+            if (extraMod != null) {
+                assertTrue(conditions.contains(extraMod),
+                        "Missing dependency " + extraMod + " for " + filename);
+            }
+            for (var element : recipe.getAsJsonArray("results")) {
+                JsonObject result = element.getAsJsonObject();
+                if (result.has("output") && result.get("output").isJsonObject()) {
+                    JsonObject output = result.getAsJsonObject("output");
+                    if (output.has("id")) {
+                        assertNotEquals(seedId, output.get("id").getAsString(),
+                                "Tier 6 must not produce extra seeds: " + filename);
+                    }
+                }
+            }
         }
     }
 
 
+
     @Test
-    void packagedJarShouldContainEveryGeneratedRecipe()
-            throws IOException {
-
+    void packagedJarShouldContainEveryGeneratedRecipe() throws IOException {
         String version = System.getProperty("modVersion");
-
-        assertNotNull(
-                version,
-                "Gradle did not provide the mod version."
-        );
+        assertNotNull(version, "Gradle did not provide the mod version.");
 
         Path jarPath = Path.of(
-                "build", "libs",
-                "mysticalclochedseeds-" + version + ".jar"
+                "build", "libs", "mysticalclochedseeds-" + version + ".jar"
         );
+        assertTrue(Files.isRegularFile(jarPath), "Mod JAR not found: " + jarPath);
 
-        assertTrue(
-                Files.isRegularFile(jarPath),
-                "Mod JAR was not found: " + jarPath
-        );
-
-        assertTrue(
-                Files.isDirectory(RECIPE_DIRECTORY),
-                "Generated recipe directory was not found."
-        );
-
-        Set<String> expectedRecipes;
-
-        try (Stream<Path> files = Files.list(RECIPE_DIRECTORY)) {
-            expectedRecipes = files
-                    .filter(path -> path.toString().endsWith(".json"))
-                    .map(path ->
-                            "data/mysticalclochedseeds/recipe/"
-                                    + path.getFileName()
-                    )
-                    .collect(Collectors.toSet());
+        // The mod packages generated Cloche recipes AND manually authored
+        // Awakening Altar recipes. Compare both sources with the actual JAR.
+        Set<String> expectedRecipes = new java.util.HashSet<>();
+        for (Path directory : List.of(
+                RECIPE_DIRECTORY,
+                Path.of("src/main/resources/data/mysticalclochedseeds/recipe")
+        )) {
+            assertTrue(Files.isDirectory(directory), "Missing recipe directory: " + directory);
+            try (Stream<Path> files = Files.list(directory)) {
+                files.filter(Files::isRegularFile)
+                        .filter(path -> path.getFileName().toString().endsWith(".json"))
+                        .map(path -> "data/mysticalclochedseeds/recipe/" + path.getFileName())
+                        .forEach(expectedRecipes::add);
+            }
         }
-
-        assertFalse(
-                expectedRecipes.isEmpty(),
-                "No generated recipes were found."
-        );
+        assertFalse(expectedRecipes.isEmpty(), "No recipes were found.");
 
         try (ZipFile jar = new ZipFile(jarPath.toFile())) {
-
             Set<String> packagedRecipes = jar.stream()
                     .map(ZipEntry::getName)
-                    .filter(name -> name.startsWith(
-                            "data/mysticalclochedseeds/recipe/"
-                    ))
+                    .filter(name -> name.startsWith("data/mysticalclochedseeds/recipe/"))
                     .filter(name -> name.endsWith(".json"))
                     .collect(Collectors.toSet());
 
-            assertEquals(
-                    expectedRecipes,
-                    packagedRecipes,
-                    "Packaged recipes differ from generated recipes."
-            );
+            Set<String> missing = new java.util.HashSet<>(expectedRecipes);
+            missing.removeAll(packagedRecipes);
+            Set<String> unexpected = new java.util.HashSet<>(packagedRecipes);
+            unexpected.removeAll(expectedRecipes);
+
+            assertTrue(missing.isEmpty(), "Missing recipes in JAR: " + missing);
+            assertTrue(unexpected.isEmpty(), "Unexpected recipes in JAR: " + unexpected);
 
             assertNotNull(
-                    jar.getEntry(
-                            "assets/mysticalclochedseeds/textures/"
-                                    + "block/farmland_moist_insanium.png"
-                    ),
+                    jar.getEntry("assets/mysticalclochedseeds/textures/"
+                            + "block/farmland_moist_insanium.png"),
                     "Insanium texture is missing from the JAR."
             );
-
             assertNotNull(
                     jar.getEntry("META-INF/neoforge.mods.toml"),
                     "NeoForge metadata is missing from the JAR."
@@ -566,6 +570,7 @@ class RecipeIntegrityTest {
         try (Stream<Path> files = Files.list(RECIPE_DIRECTORY)) {
             recipes = files
                     .filter(path -> path.toString().endsWith(".json"))
+                    .filter(path -> !path.getFileName().toString().endsWith("_cruxed.json"))
                     .toList();
         }
 
@@ -657,6 +662,7 @@ class RecipeIntegrityTest {
         try (Stream<Path> files = Files.list(RECIPE_DIRECTORY)) {
             allRecipes = files
                     .filter(path -> path.toString().endsWith(".json"))
+                    .filter(path -> !path.getFileName().toString().endsWith("_cruxed.json"))
                     .toList();
         }
 
@@ -864,6 +870,7 @@ class RecipeIntegrityTest {
         try (Stream<Path> files = Files.list(RECIPE_DIRECTORY)) {
             recipes = files
                     .filter(path -> path.toString().endsWith(".json"))
+                    .filter(path -> !path.getFileName().toString().endsWith("_cruxed.json"))
                     .toList();
         }
 
@@ -980,6 +987,7 @@ class RecipeIntegrityTest {
         try (Stream<Path> files = Files.list(RECIPE_DIRECTORY)) {
             recipes = files
                     .filter(path -> path.toString().endsWith(".json"))
+                    .filter(path -> !path.getFileName().toString().endsWith("_cruxed.json"))
                     .toList();
         }
 
@@ -1027,6 +1035,7 @@ class RecipeIntegrityTest {
         try (Stream<Path> files = Files.list(RECIPE_DIRECTORY)) {
             recipes = files
                     .filter(path -> path.toString().endsWith(".json"))
+                    .filter(path -> !path.getFileName().toString().endsWith("_cruxed.json"))
                     .toList();
         }
 

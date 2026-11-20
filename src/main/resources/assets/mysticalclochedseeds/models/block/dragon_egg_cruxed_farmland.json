@@ -1,0 +1,8 @@
+
+{
+  "parent": "minecraft:block/template_farmland",
+  "textures": {
+    "dirt": "mysticalclochedseeds:block/dragon_egg_cruxed_farmland_dirt",
+    "top": "mysticalclochedseeds:block/dragon_egg_cruxed_farmland_moist"
+  }
+}

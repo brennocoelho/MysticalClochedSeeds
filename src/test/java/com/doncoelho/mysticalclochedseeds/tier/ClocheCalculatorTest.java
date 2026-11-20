@@ -124,4 +124,13 @@ class ClocheCalculatorTest {
         assertEquals(0.5f, result.extraChance(), 0.0001f);
     }
 
+    @Test
+    void tierSixCropsShouldNotDropSecondarySeeds() {
+        assertEquals(
+                0.0f,
+                ClocheCalculator.calculateSeedDropChance(6, 6),
+                0.0001f
+        );
+    }
+
 }
